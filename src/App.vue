@@ -1,28 +1,62 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <vuetable
+            ref="vuetable"
+            api-url="https://vuetable.ratiw.net/api/users"
+            :fields="fields"
+            data-path="data"
+            pagination-path=""
+            @vuetable:pagination-data="onPaginationData"
+            :css="BootstrapStyle.table"
+            :show-sort-icons="true"
+    >
+    </vuetable>
+    <vuetable-pagination
+            ref="pagination"
+            :css="BootstrapStyle.pagination"
+            @vuetable-pagination:change-page="onChangePage"
+    ></vuetable-pagination>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Vuetable from 'vuetable-2';
+import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
+import BootstrapStyle from './bootstrap-css.js';
+import '../node_modules/bootstrap/dist/css/bootstrap.css';
 
 export default {
-  name: 'app',
   components: {
-    HelloWorld
-  }
-}
-</script>
+    Vuetable,
+    VuetablePagination
+  },
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+  data() {
+    return {
+      BootstrapStyle,
+      fields: [
+        'name', 'nickname', 'gender',
+        {
+          name: 'email',
+          sortField: 'email'
+        }
+      ]
+    }
+  },
+
+  methods: {
+    //...
+    // when the pagination data is available, set it to pagination component
+    onPaginationData(paginationData) {
+      this.$refs.pagination.setPaginationData(paginationData);
+    },
+
+    // when the user click something that causes the page to change,
+    // call "changePage" method in Vuetable, so that that page will be
+    // requested from the API endpoint.
+    onChangePage(page) {
+      this.$refs.vuetable.changePage(page);
+    }
+  }
+};
+</script>
